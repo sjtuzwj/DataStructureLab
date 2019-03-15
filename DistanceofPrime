@@ -1,0 +1,64 @@
+#include<iostream>
+#include<algorithm>
+#include<bitset>
+
+using namespace std;
+using ull = unsigned long long;
+
+bitset<UINT32_MAX> isPrimeSmall;
+bitset<1000007> isPrime;
+
+
+void segmentSieve(ull m, ull n)
+{
+    //初始化
+    int dif = n - m;
+    for (int i = 0; (ull)i*i <= n; i++)
+        isPrimeSmall[i] = true;
+    for (int i = 0; i<=dif; i++)
+        isPrime[i] = true;
+    //埃氏筛法
+    for (int i = 2; (ull)i * i<=n; i++)
+    {
+        if (isPrimeSmall[i])
+        {
+            //根号n区间筛
+            for (int j = 2 * i; (ull)j * j <= n; j += i)
+            {
+                isPrimeSmall[j] = false;
+            }
+            //对m-n区间筛
+            for (ull j = max(2ull, (m + i - 1) / i)*i; j<=n; j += i)
+            {
+                isPrime[j - m] = false;
+            }
+        }
+    }
+}
+
+int main()
+{
+        //输入
+        ull m, n;
+        cin >> m >> n;
+
+        //筛法
+        segmentSieve(m, n);
+
+        //求最大距离
+        ull pre = 0, cur = 0, dif = 0;
+        for (ull i = 0; i <= n-m; i++)
+        {
+            if (i + m == 2 || isPrime[i] && i + m != 1)
+            {
+                pre = cur;
+                cur = i + m;
+                if (pre != 0 && cur != 0)
+                    dif = max(cur - pre, dif);
+            }
+        }
+
+        //输出
+        cout << dif;
+    return 0;
+}
