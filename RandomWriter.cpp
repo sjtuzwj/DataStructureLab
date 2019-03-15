@@ -23,10 +23,10 @@
 #include <vector>
 #include <ctime>
 #include <random>
-#include<windows.h>
 using namespace std;
 #define MAX_CHAR_NUM 2000
 
+ofstream fout("output.txt"); 
 random_device r;
 default_random_engine e(r());
 // get filename
@@ -91,8 +91,6 @@ void model_read(ifstream &fin, const int &order, map<string, vector<char>> &mode
     }
 }
 
-ofstream fout("output.txt");//为了连续输出多篇文章(不然要while有何用)
-
 void random_write(const int &order, map<string, vector<char>> &model)
 {
     string seed;
@@ -104,7 +102,6 @@ void random_write(const int &order, map<string, vector<char>> &model)
             seed = x.first;
         }
     }
-    //ofstream fout("output.txt");//这里可以直接fout<<无压力
     fout << seed;
     int count = seed.size();
     //the seed exist and the length of article is shorter than maxlen
@@ -119,7 +116,6 @@ void random_write(const int &order, map<string, vector<char>> &model)
         if (order == 0)seed = "";
         else seed = string(seed.begin()+1,seed.end()) + nextch;
         fout << nextch;
-        fout << flush;//MSVCNMSL
         //update the count of char
         count++;
     }
@@ -128,14 +124,14 @@ void random_write(const int &order, map<string, vector<char>> &model)
 
 int main()
 {
+    ifstream fin;
+    read_file(fin);
+    while (!fin.is_open())
+    {
+        read_file(fin);
+    }
     while (true)
     {
-        ifstream fin;
-        read_file(fin);
-        while (!fin.is_open())
-        {
-            read_file(fin);
-        }
         int order = read_order();
         map<string, vector<char>> model;
         model_read(fin, order, model);
